@@ -1,52 +1,12 @@
-const Sequelize = require('sequelize');
-const moment = require('moment');
-const sequelize = new Sequelize('teste', 'root', 'root', {
-    host: 'localhost',
-    dialect: 'mysql',
+var express = require("express");
+var app = express();
+var path = require("path");
 
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    },
 
-    // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
-    operatorsAliases: false
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname + '/home.html'));
 });
 
-const tablename = moment(new Date()).format('YYYYMMDD') + '_dolj19_incremental'
+app.listen(3000);
 
-const User = sequelize.define(tablename, {
-    is_snapshot: Sequelize.BOOLEAN,
-    order_id: Sequelize.STRING,
-    price: Sequelize.FLOAT,
-    amount: Sequelize.FLOAT,
-    recived: Sequelize.DATE,
-});
-
-sequelize.sync()
-    .then(() => User.create({
-        is_snapshot: true,
-        order_id: "AS5DA6S54",
-        price: 3624.05,
-        amount: 12.42,
-        recived: new Date()
-    }))
-    .then(jane => {
-        console.log(jane.toJSON());
-    });
-
-
-sequelize.sync()
-    .then(() => User.create({
-        is_snapshot: true,
-        order_id: "AS5DA6S54",
-        price: 3624.05,
-        amount: -12.42,
-        recived: new Date()
-    }))
-    .then(jane => {
-        console.log(jane.toJSON());
-    });
-
+console.log("Running at Port 3000");
