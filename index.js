@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const moment = require('moment');
-const sequelize = new Sequelize('teste', 'root', 'root', {
-    host: 'localhost',
+const sequelize = new Sequelize('qubinance', 'qu', '83qx8J8HYAmQPkw', {
+    host: 'qubinance.cj2ppx936tun.us-east-2.rds.amazonaws.com',
     dialect: 'mysql',
 
     pool: {
