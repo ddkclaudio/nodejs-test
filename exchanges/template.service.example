@@ -1,0 +1,14 @@
+[Unit]
+Description=making your environment variables rad
+Documentation=qubox.com.br
+After=network.target
+
+[Service]
+Environment=NODE_PORT=PORT_NUMBER
+Type=simple
+User=qu
+ExecStart=/usr/bin/node FILE_TO_EXECUTE
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
