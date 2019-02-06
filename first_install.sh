@@ -1,6 +1,10 @@
 # [INSTALANDO DEPENDENCIAS]
 sudo apt update
-sudo apt install nodejs npm
+sudo apt install npm nodejs-legacy
+sudo npm cache clean -f
+sudo npm install -g n
+sudo n stable
+
 
 sudo npm install
 
