@@ -1,3 +1,5 @@
+var logger = require('logger').createLogger('binance.log'); // logs to a file
+
 var express = require("express");
 var app = express();
 var path = require("path");
@@ -14,3 +16,8 @@ app.get('/', function (req, res) {
 app.listen(port);
 
 console.log("Running at Port " + port);
+
+setInterval(function () {
+    logger.info('ping', 'PORT_NUMBER',port);
+}, 3000);
+
