@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bitfinex-api-node": "^2.0.4",
     "child_process": "^1.0.2",
     "express": "^4.16.4",
     "logger": "0.0.1",

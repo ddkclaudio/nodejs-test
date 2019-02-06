@@ -1,23 +1,37 @@
-var logger = require('logger').createLogger('/home/qu/logs/qu_bitfinex.log'); // logs to a file
+// https://github.com/bitfinexcom/bitfinex-api-node/blob/master/examples/ws2/order_books.js
+const BFX = require('bitfinex-api-node')
 
-var express = require("express");
-var app = express();
-var path = require("path");
+const bfx = new BFX({
+    ws: {
+        autoReconnect: true,
+        seqAudit: true,
+        packetWDDelay: 10 * 1000
+    }
+})
 
-if(process.env.NODE_PORT)
-	var port = process.env.NODE_PORT
-else
-	var port = 3000
+let ws = bfx.ws(2, {
+    manageOrderBooks: true, // tell the ws client to maintain full sorted OBs
+    transform: true // auto-transform array OBs to OrderBook objects
+})
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));
-});
+ws.on('error', (err) => {
+    console.log('error: %j', err)
+})
 
-app.listen(port);
+ws.on('open', () => {
+    console.log('open')
+    ws.subscribeOrderBook('tBTCUSD', 'R0', 100)
+    ws.subscribeTrades('BTCUSD')
+})
 
-console.log("Running at Port " + port);
+// 'ob' is a full OrderBook instance, with sorted arrays 'bids' & 'asks'
+ws.onOrderBook({ symbol: 'tBTCUSD' }, (ob) => {
+    // console.log(ob);
+})
 
-setInterval(function () {
-    logger.info('ping', 'PORT_NUMBER',port);
-}, 3000);
+// https://www.npmjs.com/package/bitfinex-api-node
+ws.onTrades({ symbol: 'tBTCUSD' }, (trades) => {
+    console.log(`trades: ${JSON.stringify(trades)}`)
+})
 
+ws.open()
