@@ -1,4 +1,4 @@
-var logger = require('logger').createLogger('binance.log'); // logs to a file
+var logger = require('logger').createLogger('/home/qu/logs/qu_binance.log'); // logs to a file
 
 var express = require("express");
 var app = express();
