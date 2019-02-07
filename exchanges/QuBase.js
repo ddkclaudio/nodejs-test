@@ -2,17 +2,16 @@ const Sequelize = require('sequelize');
 const moment = require('moment');
 
 module.exports = class QuBase {
-    constructor(symbols, dbname, user, password, host, dialect, timeToSaveInSeconds = 1) {
+    constructor(symbols, dbname, user, password, host, dialect, timeToSaveBookInSeconds) {
         const self = this
         this.symbols = symbols
-        this.timeToSaveInSeconds = timeToSaveInSeconds
         this.timeoutToSave = null
         this.openDataBase(dialect, host, dbname, user, password)
+        this.setTimeoutToSaveBook(timeToSaveBookInSeconds)
 
         this.coins = {}
         this.symbols.forEach(function (symbol) {
             self.coins[symbol] = {}
-            self.coins[symbol].trades = []
             self.coins[symbol].book = {}
             self.coins[symbol].book.bids = []
             self.coins[symbol].book.asks = []
@@ -40,18 +39,16 @@ module.exports = class QuBase {
         });
     }
 
-    setTimeoutToSave(timeToSaveInSeconds, self = this) {
+    setTimeoutToSaveBook(timeToSaveBookInSeconds, self = this) {
         if (this.timeoutToSave != null)
             clearInterval(this.timeoutToSave);
 
         this.timeoutToSave = setInterval(() => {
             self._save()
-        }, timeToSaveInSeconds * 1000);
+        }, timeToSaveBookInSeconds * 1000);
     }
 
     _onTrades(trade = { symbol: null, trades: null }) {
-        if (this.timeoutToSave == null)
-            this.setTimeoutToSave(this.timeToSaveInSeconds)
         this.handleTrades(trade)
     }
 
@@ -91,7 +88,7 @@ module.exports = class QuBase {
             // SALVANDO O INSTRUMENTO
             self.sequelize.sync()
                 .then(() => Marketdata.create({
-                    market_data: JSON.stringify(coin),
+                    market_data: JSON.stringify(coin.book),
                     start: new Date()
                 }))
                 .then(result => {

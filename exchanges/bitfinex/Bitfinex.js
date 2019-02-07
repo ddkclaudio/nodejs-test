@@ -2,8 +2,8 @@ const QuBase = require("../QuBase")
 const BFX = require('bitfinex-api-node')
 
 module.exports = class Bitfinex extends QuBase {
-    constructor(symbols, dbname = "teste", user = "root", password = "root", host = "localhost", dialect = "mysql", timeToSaveInSeconds = 1) {
-        super(symbols, dbname, user, password, host, dialect, timeToSaveInSeconds)
+    constructor(symbols, dbname = "teste", user = "root", password = "root", host = "localhost", dialect = "mysql", timeToSaveBookInSeconds = 1) {
+        super(symbols, dbname, user, password, host, dialect, timeToSaveBookInSeconds)
         this.connectWithExchange()
     }
 
