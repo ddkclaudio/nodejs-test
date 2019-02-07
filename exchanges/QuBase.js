@@ -44,7 +44,7 @@ module.exports = class QuBase {
             clearInterval(this.timeoutToSave);
 
         this.timeoutToSave = setInterval(() => {
-            self._save()
+            self._saveBook()
         }, timeToSaveBookInSeconds * 1000);
     }
 
@@ -52,7 +52,7 @@ module.exports = class QuBase {
         this.handleTrades(trade)
     }
 
-    handleTrades(trade) {
+    handleTrades(trades) {
         console.log("Alert::QuBase", "handleTrades");
     }
 
@@ -64,7 +64,7 @@ module.exports = class QuBase {
         console.log("Alert::QuBase", "handleOrderBook");
     }
 
-    _save() {
+    _saveBook() {
         const self = this
 
         // COPIA PROFUNDA
@@ -76,7 +76,6 @@ module.exports = class QuBase {
 
             // ESCOLHENDO UM INSTRUMENTO
             const coin = toSave[symbol]
-            console.log("QuBase", "save()", symbol);
 
             // CRIANDO A TABELA DO INSTRUMENTO
             const tablename = moment(new Date()).format('YYYYMMDD') + '_' + symbol
@@ -92,9 +91,26 @@ module.exports = class QuBase {
                     start: new Date()
                 }))
                 .then(result => {
-                    console.log(result.toJSON());
                 });
         })
+    }
+
+    saveTrade(symbol, trade) {
+        const self = this
+        // CRIANDO A TABELA DO INSTRUMENTO
+        const tablename = moment(new Date()).format('YYYYMMDD') + '_trades_' + symbol
+        const Marketdata = self.sequelize.define(tablename, {
+            order_id: Sequelize.DOUBLE,
+            time_trade: Sequelize.DATE,
+            amount: Sequelize.DOUBLE,
+            price: Sequelize.DOUBLE,
+        });
+
+        // SALVANDO O INSTRUMENTO
+        self.sequelize.sync()
+            .then(() => Marketdata.create(trade))
+            .then(result => {
+            });
     }
 }
 
