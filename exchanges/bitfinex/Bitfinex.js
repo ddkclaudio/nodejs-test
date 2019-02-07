@@ -1,15 +1,14 @@
 const QuBase = require("../QuBase")
 const BFX = require('bitfinex-api-node')
 
-
 module.exports = class Bitfinex extends QuBase {
-    constructor(symbols, timeToSaveInSeconds = 1) {
-        super(timeToSaveInSeconds)
-        this.symbols = symbols
-        this.connectBook()
+    constructor(symbols, dbname = "teste", user = "root", password = "root", host = "localhost", dialect = "mysql", timeToSaveInSeconds = 1) {
+        super(symbols, dbname, user, password, host, dialect, timeToSaveInSeconds)
+        this.connectWithExchange()
     }
 
-    connectBook(self = this) {
+    connectWithExchange() {
+        const self = this
         // CRIANDO OBJETO BFX
         this.bfx = new BFX({
             ws: {
@@ -41,15 +40,26 @@ module.exports = class Bitfinex extends QuBase {
 
                 // CALLBACK T&T PARA ATUALIZACOES
                 self.ws.onTrades({ symbol: 't' + symbol }, (trades) => {
-                    self.onTrades({ symbol: symbol, trades: trades })
+                    self._onTrades({ symbol: symbol, trades: trades })
                 })
 
                 self.ws.onOrderBook({ symbol: 't' + symbol }, (orderBook) => {
-                    self.onOrderBook({ symbol: symbol, orderBook: orderBook })
+                    self._onOrderBook({ symbol: symbol, orderBook: orderBook })
                 })
             })
         })
 
         this.ws.open()
     }
+
+    handleTrades(trade) {
+        console.log("Bitfinex", "handleTrades");
+    }
+
+    handleOrderBook(orderBook) {
+        // console.log("Bitfinex", "handleOrderBook");
+    }
+
+
+
 }

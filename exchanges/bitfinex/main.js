@@ -1,5 +1,5 @@
 const Bitfinex = require('./Bitfinex')
-const bitfinex = new Bitfinex(["BTCUSD","ETHUSD"]);
+const bitfinex = new Bitfinex(["BTCUSD","ETHUSD"],'qua_bitfinex');
 
 
 
