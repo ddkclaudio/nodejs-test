@@ -78,7 +78,7 @@ module.exports = class QuBase {
             const coin = toSave[symbol]
 
             // CRIANDO A TABELA DO INSTRUMENTO
-            const tablename = moment(new Date()).format('YYYYMMDD') + '_' + symbol
+            const tablename = moment(new Date()).format('YYYYMMDD') + "_" + symbol + '_mbo'
             const Marketdata = self.sequelize.define(tablename, {
                 market_data: Sequelize.TEXT,
                 start: Sequelize.DATE,
@@ -98,7 +98,7 @@ module.exports = class QuBase {
     saveTrade(symbol, trade) {
         const self = this
         // CRIANDO A TABELA DO INSTRUMENTO
-        const tablename = moment(new Date()).format('YYYYMMDD') + '_trades_' + symbol
+        const tablename = moment(new Date()).format('YYYYMMDD') + "_" + symbol + '_trade'
         const Marketdata = self.sequelize.define(tablename, {
             order_id: Sequelize.DOUBLE,
             time_trade: Sequelize.DATE,
