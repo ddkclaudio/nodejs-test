@@ -41,23 +41,15 @@ module.exports = class Bitfinex extends QuBase {
 
                 // CALLBACK T&T PARA ATUALIZACOES
                 self.ws.onTrades({ symbol: 't' + symbol }, (trades) => {
-                    self.newTrades({ symbol: symbol, trades: trades })
+                    self.onTrades({ symbol: symbol, trades: trades })
                 })
 
-                self.ws.onOrderBook({ symbol: 't' + symbol }, (ob) => {
-                    console.log(symbol, ob);
+                self.ws.onOrderBook({ symbol: 't' + symbol }, (orderBook) => {
+                    self.onOrderBook({ symbol: symbol, orderBook: orderBook })
                 })
-
-
             })
         })
 
         this.ws.open()
     }
-
-    normalize() {
-        console.log("Bitfinex.normalize()");
-    }
-
-
 }
