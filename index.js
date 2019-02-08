@@ -63,3 +63,28 @@ for (let index = 0; index <= max; index++) {
     }
 }
 
+var tmp2 = []
+for (let index = 0; index <= max; index++) {
+
+
+    var person = tt.build({
+        is_snapshot: true,
+        order_id: "AS5DA6S54",
+        price: 3624.05,
+        amount: 12.42,
+        recived: new Date()
+    });
+
+    tmp2.push(person)
+
+    if (index == max) {
+        console.log("start save", new Date(), tmp2.length);
+
+        sequelize.sync()
+            .then(() => tt.bulkCreate(tmp2))
+            .then(msg => {
+                console.log("end save", new Date());
+            });
+    }
+}
+
