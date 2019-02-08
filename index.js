@@ -15,18 +15,10 @@ const sequelize = new Sequelize('test', 'root', 'root', {
     operatorsAliases: false
 });
 
-
-
-
-
-
-
-
-
 const models = []
 console.log("start loop", new Date());
-// PARA 30 LEVA 27 SEGUNDOS
-for (let i = 0; i < 30; i++) {
+
+for (let i = 0; i < 120; i++) {
 
     const _BOOK_ = moment(new Date()).format('YYYYMMDD') + '_' + i + '_BOOK_'
     const _TT_ = moment(new Date()).format('YYYYMMDD') + '_' + i + '_TT_'
@@ -51,7 +43,7 @@ for (let i = 0; i < 30; i++) {
     models.push(_TT_M)
 }
 
-for (let i = 0; i < 30; i++) {
+for (let i = 0; i < 120; i++) {
     testExtress(i, i + 1)
 }
 
