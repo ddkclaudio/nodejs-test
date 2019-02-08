@@ -65,6 +65,7 @@ module.exports = class QuBase {
     }
 
     _saveBook() {
+        return
         const self = this
 
         // COPIA PROFUNDA
@@ -96,6 +97,7 @@ module.exports = class QuBase {
     }
 
     saveTrade(symbol, trade) {
+        return
         const self = this
         // CRIANDO A TABELA DO INSTRUMENTO
         const tablename = moment(new Date()).format('YYYYMMDD') + "_" + symbol + '_trade'

@@ -38,14 +38,10 @@ function getChuncks(size, limit) {
     return roundToUP(size / chunks)
 }
 
-
-
-
-
 const rest = bfx.rest(2)
 rest.symbols().then(symbols => {
     symbols = symbols.map(function (x) { return x.toUpperCase() })
-    symbols = symbols.slice(0, 50)
+    symbols = symbols.slice(0, 120)
 
     var newarray = splitArray(symbols, getChuncks(symbols.length, 50))
 
