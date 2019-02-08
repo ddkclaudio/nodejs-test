@@ -15,76 +15,100 @@ const sequelize = new Sequelize('test', 'root', 'root', {
     operatorsAliases: false
 });
 
-const tablename = moment(new Date()).format('YYYYMMDD') + '_dolj19_incremental'
-
-const User = sequelize.define(tablename, {
-    is_snapshot: Sequelize.BOOLEAN,
-    order_id: Sequelize.STRING,
-    price: Sequelize.FLOAT,
-    amount: Sequelize.FLOAT,
-    recived: Sequelize.DATE,
-});
-
-const tt = sequelize.define(tablename, {
-    is_snapshot: Sequelize.BOOLEAN,
-    order_id: Sequelize.STRING,
-    price: Sequelize.FLOAT,
-    amount: Sequelize.FLOAT,
-    recived: Sequelize.DATE,
-});
 
 
-const tmp = []
+
+
+
+
+
+
+const models = []
 console.log("start loop", new Date());
+// PARA 30 LEVA 27 SEGUNDOS
+for (let i = 0; i < 30; i++) {
 
-const max = 400 * 200
+    const _BOOK_ = moment(new Date()).format('YYYYMMDD') + '_' + i + '_BOOK_'
+    const _TT_ = moment(new Date()).format('YYYYMMDD') + '_' + i + '_TT_'
 
-for (let index = 0; index <= max; index++) {
-
-
-    var person = User.build({
-        is_snapshot: true,
-        order_id: "AS5DA6S54",
-        price: 3624.05,
-        amount: 12.42,
-        recived: new Date()
+    const _BOOK_M = sequelize.define(_BOOK_, {
+        is_snapshot: Sequelize.BOOLEAN,
+        order_id: Sequelize.STRING,
+        price: Sequelize.FLOAT,
+        amount: Sequelize.FLOAT,
+        recived: Sequelize.DATE,
     });
 
-    tmp.push(person)
-
-    if (index == max) {
-        console.log("start save", new Date(), tmp.length);
-
-        sequelize.sync()
-            .then(() => User.bulkCreate(tmp))
-            .then(msg => {
-                console.log("end save", new Date());
-            });
-    }
-}
-
-var tmp2 = []
-for (let index = 0; index <= max; index++) {
-
-
-    var person = tt.build({
-        is_snapshot: true,
-        order_id: "AS5DA6S54",
-        price: 3624.05,
-        amount: 12.42,
-        recived: new Date()
+    const _TT_M = sequelize.define(_TT_, {
+        is_snapshot: Sequelize.BOOLEAN,
+        order_id: Sequelize.STRING,
+        price: Sequelize.FLOAT,
+        amount: Sequelize.FLOAT,
+        recived: Sequelize.DATE,
     });
 
-    tmp2.push(person)
-
-    if (index == max) {
-        console.log("start save", new Date(), tmp2.length);
-
-        sequelize.sync()
-            .then(() => tt.bulkCreate(tmp2))
-            .then(msg => {
-                console.log("end save", new Date());
-            });
-    }
+    models.push(_BOOK_M)
+    models.push(_TT_M)
 }
 
+for (let i = 0; i < 30; i++) {
+    testExtress(i, i + 1)
+}
+
+function testExtress(book, trade) {
+
+    const max = 300
+    const User = models[book]
+    const tt = models[trade]
+
+    const tmp = []
+    for (let index = 0; index <= 1; index++) {
+
+
+        var person = User.build({
+            is_snapshot: true,
+            order_id: "AS5DA6S54",
+            price: 3624.05,
+            amount: 12.42,
+            recived: new Date()
+        });
+
+        tmp.push(person)
+
+        if (index == 1) {
+            console.log("start save", new Date(), tmp.length);
+
+            sequelize.sync()
+                .then(() => User.bulkCreate(tmp))
+                .then(msg => {
+                    console.log("end save", new Date());
+                });
+        }
+    }
+
+    var tmp2 = []
+    for (let index = 0; index <= max; index++) {
+
+
+        var person = tt.build({
+            is_snapshot: true,
+            order_id: "AS5DA6S54",
+            price: 3624.05,
+            amount: 12.42,
+            recived: new Date()
+        });
+
+        tmp2.push(person)
+
+        if (index == max) {
+            console.log("start save", new Date(), tmp2.length);
+
+            sequelize.sync()
+                .then(() => tt.bulkCreate(tmp2))
+                .then(msg => {
+                    console.log("end save", new Date());
+                });
+        }
+    }
+
+}
