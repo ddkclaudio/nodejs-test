@@ -12,6 +12,7 @@ module.exports = class QuBase {
         this.coins = {}
         this.symbols.forEach(function (symbol) {
             self.coins[symbol] = {}
+            self.coins[symbol].trades = []
             self.coins[symbol].book = {}
             self.coins[symbol].book.bids = []
             self.coins[symbol].book.asks = []
@@ -65,7 +66,6 @@ module.exports = class QuBase {
     }
 
     _saveBook() {
-        return
         const self = this
 
         // COPIA PROFUNDA
@@ -92,12 +92,18 @@ module.exports = class QuBase {
                     start: new Date()
                 }))
                 .then(result => {
+                    console.log("book salvo");
+
                 });
         })
     }
 
     saveTrade(symbol, trade) {
-        return
+        // console.log(symbol, trade);
+
+        trade = JSON.parse(trade)
+
+
         const self = this
         // CRIANDO A TABELA DO INSTRUMENTO
         const tablename = moment(new Date()).format('YYYYMMDD') + "_" + symbol + '_trade'
@@ -110,8 +116,9 @@ module.exports = class QuBase {
 
         // SALVANDO O INSTRUMENTO
         self.sequelize.sync()
-            .then(() => Marketdata.create(trade))
+            .then(() => Marketdata.bulkCreate(trade))
             .then(result => {
+                console.log(symbol,"trade_save()");
             });
     }
 }

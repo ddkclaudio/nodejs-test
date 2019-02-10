@@ -2,9 +2,13 @@ const QuBase = require("../QuBase")
 const BFX = require('bitfinex-api-node')
 
 module.exports = class Bitfinex extends QuBase {
-    constructor(symbols, dbname = "teste", user = "root", password = "root", host = "localhost", dialect = "mysql", timeToSaveBookInSeconds = 60) {
+    constructor(id, symbols, dbname = "teste", user = "root", password = "root", host = "localhost", dialect = "mysql", timeToSaveBookInSeconds = 60) {
         super(symbols, dbname, user, password, host, dialect, timeToSaveBookInSeconds)
         this.connectWithExchange()
+        this.id = id
+    }
+    static someMethod() {
+        console.log('Doing someMethod');
     }
 
     connectWithExchange() {
@@ -51,19 +55,40 @@ module.exports = class Bitfinex extends QuBase {
         this.ws.open()
     }
 
-    handleTrades(trades) {
+    handleTrades(msg) {
         const self = this
-        trades.trades.forEach(function (trade) {
+        msg.trades.forEach(function (trade) {
             const normalized = {
                 order_id: trade.id,
                 time_trade: trade.mts,
                 amount: trade.amount,
                 price: trade.price,
             }
-            self.saveTrade(trades.symbol, normalized)
+
+            self.coins[msg.symbol].trades.push(normalized)
+
+            // console.log(msg.symbol, JSON.stringify(normalized));
+
+            if (self.coins[msg.symbol].trades.length >= self.getRandomIntInclusive(35, 50)) {
+                console.log("SAVE()::", self.id, msg.symbol, self.coins[msg.symbol].trades.length);
+
+                const tmp = self.coins[msg.symbol].trades
+                self.coins[msg.symbol].trades = []
+
+                if (!self.coins[msg.symbol].numsaved)
+                    self.coins[msg.symbol].numsaved = 0
+                self.coins[msg.symbol].numsaved++
+                console.log(self.coins[msg.symbol].numsaved);
+
+                //SAVE
+            }
         })
     }
-
+    getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
     handleOrderBook(orderBook) {
         this.coins[orderBook.symbol].book.bids = orderBook.orderBook.bids
         this.coins[orderBook.symbol].book.asks = orderBook.orderBook.asks

@@ -2,7 +2,6 @@
 const BFX = require('bitfinex-api-node')
 const Bitfinex = require('./Bitfinex')
 var bitfinexs = []
-// bitfinex = new Bitfinex(symbols, 'qua_bitfinex');
 
 const bfx = new BFX({
     ws: {
@@ -10,6 +9,23 @@ const bfx = new BFX({
         seqAudit: true,
         packetWDDelay: 10 * 1000
     }
+})
+
+const rest = bfx.rest(2)
+rest.symbols().then(symbols => {
+    symbols = symbols.map(function (x) { return x.toUpperCase() })
+    symbols = symbols.slice(0, 40)
+    // symbols = symbols.slice(0, 120)
+
+    var newarray = splitArray(symbols, getChuncks(symbols.length, 5))
+
+    for (let i = 0; i < newarray.length; i++) {
+        console.log(i, "=======================================================");
+        bitfinexs.push(new Bitfinex(i, symbols, 'qua_bitfinex'))
+    }
+
+}).catch(err => {
+    console.log('error: %j', err)
 })
 
 function splitArray(array, chunk = 250) {
@@ -22,7 +38,6 @@ function splitArray(array, chunk = 250) {
 
     return temparray
 }
-
 
 function roundToUP(n) {
     var decimal = n - Math.floor(n)
@@ -37,24 +52,3 @@ function getChuncks(size, limit) {
     var chunks = roundToUP(size / limit)
     return roundToUP(size / chunks)
 }
-
-const rest = bfx.rest(2)
-rest.symbols().then(symbols => {
-    symbols = symbols.map(function (x) { return x.toUpperCase() })
-    symbols = symbols.slice(0, 120)
-
-    var newarray = splitArray(symbols, getChuncks(symbols.length, 50))
-
-    for (let i = 0; i < newarray.length; i++) {
-        console.log(i, "=======================================================");
-        const element = newarray[i];
-        bitfinexs.push(new Bitfinex(symbols, 'qua_bitfinex'))
-    }
-
-}).catch(err => {
-    console.log('error: %j', err)
-})
-
-
-
-// // yfrpJA5MwzgeNWR
