@@ -98,11 +98,10 @@ module.exports = class QuBase {
         })
     }
 
-    saveTrade(symbol, trade) {
-        // console.log(symbol, trade);
-
-        trade = JSON.parse(trade)
-
+    saveTrade(symbol) {
+        console.log(symbol, "salvando ...");
+        const tardes = this.coins[symbol].trades
+        this.coins[symbol].trades = []
 
         const self = this
         // CRIANDO A TABELA DO INSTRUMENTO
@@ -116,9 +115,9 @@ module.exports = class QuBase {
 
         // SALVANDO O INSTRUMENTO
         self.sequelize.sync()
-            .then(() => Marketdata.bulkCreate(trade))
+            .then(() => Marketdata.bulkCreate(tardes))
             .then(result => {
-                console.log(symbol,"trade_save()");
+                console.log(symbol, "salvo com sucesso!!");
             });
     }
 }

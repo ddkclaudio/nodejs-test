@@ -65,22 +65,14 @@ module.exports = class Bitfinex extends QuBase {
                 price: trade.price,
             }
 
-            self.coins[msg.symbol].trades.push(normalized)
+            const coin = self.coins[msg.symbol]
+            coin.trades.push(normalized)
 
-            // console.log(msg.symbol, JSON.stringify(normalized));
-
-            if (self.coins[msg.symbol].trades.length >= self.getRandomIntInclusive(35, 50)) {
-                console.log("SAVE()::", self.id, msg.symbol, self.coins[msg.symbol].trades.length);
-
-                const tmp = self.coins[msg.symbol].trades
-                self.coins[msg.symbol].trades = []
-
-                if (!self.coins[msg.symbol].numsaved)
-                    self.coins[msg.symbol].numsaved = 0
-                self.coins[msg.symbol].numsaved++
-                console.log(self.coins[msg.symbol].numsaved);
-
-                //SAVE
+            if (coin.trades.length >= self.getRandomIntInclusive(30,50)) {
+                console.log(msg.symbol,coin.trades.length);
+                self.saveTrade(msg.symbol)
+            }else{
+                
             }
         })
     }
