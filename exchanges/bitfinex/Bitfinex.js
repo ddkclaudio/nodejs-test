@@ -6,6 +6,8 @@ module.exports = class Bitfinex extends QuBase {
         super(symbols, dbname, user, password, host, dialect, timeToSaveBookInSeconds)
         this.connectWithExchange()
         this.id = id
+        console.log("Websocket id", this.id);
+
     }
     static someMethod() {
         console.log('Doing someMethod');
@@ -64,23 +66,10 @@ module.exports = class Bitfinex extends QuBase {
                 amount: trade.amount,
                 price: trade.price,
             }
-
-            const coin = self.coins[msg.symbol]
-            coin.trades.push(normalized)
-
-            if (coin.trades.length >= self.getRandomIntInclusive(30,50)) {
-                console.log(msg.symbol,coin.trades.length);
-                self.saveTrade(msg.symbol)
-            }else{
-                
-            }
+            self.coins[msg.symbol].trades.push(normalized)
         })
     }
-    getRandomIntInclusive(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+
     handleOrderBook(orderBook) {
         this.coins[orderBook.symbol].book.bids = orderBook.orderBook.bids
         this.coins[orderBook.symbol].book.asks = orderBook.orderBook.asks

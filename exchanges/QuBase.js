@@ -3,11 +3,13 @@ const moment = require('moment');
 
 module.exports = class QuBase {
     constructor(symbols, dbname, user, password, host, dialect, timeToSaveBookInSeconds) {
+        this.id = -1
         const self = this
         this.symbols = symbols
         this.timeoutToSave = null
         this.openDataBase(dialect, host, dbname, user, password)
         this.setTimeoutToSaveBook(timeToSaveBookInSeconds)
+        this.setTimeoutToSaveTrade(this.getAPrimeNumber())
 
         this.coins = {}
         this.symbols.forEach(function (symbol) {
@@ -47,6 +49,17 @@ module.exports = class QuBase {
         this.timeoutToSave = setInterval(() => {
             self._saveBook()
         }, timeToSaveBookInSeconds * 1000);
+    }
+
+    setTimeoutToSaveTrade(timeToTradeInSeconds, self = this) {
+        console.log("Primo escolhido", timeToTradeInSeconds);
+
+        if (this.timeoutToSaveTrade != null)
+            clearInterval(this.timeoutToSaveTrade);
+
+        this.timeoutToSaveTrade = setInterval(() => {
+            self.saveAllTrade()
+        }, timeToTradeInSeconds * 1000);
     }
 
     _onTrades(trade = { symbol: null, trades: null }) {
@@ -99,8 +112,12 @@ module.exports = class QuBase {
     }
 
     saveTrade(symbol) {
-        console.log(symbol, "salvando ...");
-        const tardes = this.coins[symbol].trades
+        // console.log(symbol, "salvando ...");
+        const trades = this.coins[symbol].trades
+
+        if (trades.length == 0)
+            return
+
         this.coins[symbol].trades = []
 
         const self = this
@@ -115,10 +132,28 @@ module.exports = class QuBase {
 
         // SALVANDO O INSTRUMENTO
         self.sequelize.sync()
-            .then(() => Marketdata.bulkCreate(tardes))
+            .then(() => Marketdata.bulkCreate(trades))
             .then(result => {
-                console.log(symbol, "salvo com sucesso!!");
+                // console.log(symbol, "salvo com sucesso!!");
             });
+    }
+
+    saveAllTrade() {
+        console.log("Salvando trades websocket", this.id, new Date());
+        for (let i = 0; i < this.symbols.length; i++)
+            this.saveTrade(this.symbols[i])
+    }
+
+    getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+
+    getAPrimeNumber() {
+        const primes = [11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53]
+        return primes[this.getRandomIntInclusive(0, primes.length - 1)]
     }
 }
 

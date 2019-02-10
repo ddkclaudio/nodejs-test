@@ -19,7 +19,6 @@ rest.symbols().then(symbols => {
     var newarray = splitArray(symbols, getChuncks(symbols.length, 5))
 
     for (let i = 0; i < newarray.length; i++) {
-        console.log(i, "=======================================================");
         bitfinexs.push(new Bitfinex(i, newarray[i], 'qua_bitfinex'))
     }
 
