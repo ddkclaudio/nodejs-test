@@ -78,7 +78,12 @@ module.exports = class QuBase {
         console.log("Alert::QuBase", "handleOrderBook");
     }
 
+    updateBookToSave() {
+
+    }
+
     _saveBook() {
+        this.updateBookToSave()
         const self = this
 
         // COPIA PROFUNDA

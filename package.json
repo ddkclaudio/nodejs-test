@@ -12,6 +12,7 @@
     "bitfinex-api-node": "^2.0.4",
     "child_process": "^1.0.2",
     "express": "^4.16.4",
+    "gdax": "^0.8.0",
     "logger": "0.0.1",
     "moment": "^2.24.0",
     "mysql2": "^1.6.4",
