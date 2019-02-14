@@ -2,7 +2,7 @@ const Gdax = require('gdax');
 const QuBase = require('../QuBase')
 
 module.exports = class QuCoinbase extends QuBase {
-    constructor(id, symbols, dbname = "teste", user = "root", password = "root", host = "localhost", dialect = "mysql", timeToSaveBookInSeconds = 10) {
+    constructor(id, symbols, dbname = "teste", user = "root", password = "root", host = "localhost", dialect = "mysql", timeToSaveBookInSeconds = 60) {
         super(symbols, dbname, user, password, host, dialect, timeToSaveBookInSeconds)
         this.connectWithExchange(symbols)
     }
@@ -16,42 +16,56 @@ module.exports = class QuCoinbase extends QuBase {
         this.publicClient = new Gdax.PublicClient();
         this.orderbookSync = new Gdax.OrderbookSync(markets);
 
-        for (let i = 0; i < markets.length; i++) {
-            const market = markets[i];
-            console.log(market, "=============================");
+        // for (let i = 0; i < markets.length; i++) {
+        //     const market = markets[i];
+        //     console.log(market, "=============================");
 
-            // GET 100 TRADES LAST_ID = 59064031
-            this.publicClient.getProductTrades(market, (err, resp, data) => {
-                if (err) {
-                    console.log("\n\nerr" + market, err);
-                }
+        //     this.getProductTrades(market)
 
-                this._onTrades({ symbol: market, trades: data })
-            });
+        // }
 
-        }
+    }
 
+    getProductTrades(market) {
+        // GET 100 TRADES LAST_ID = 59064031
+        this.publicClient.getProductTrades(market, (err, resp, data) => {
+            if (err) {
+                console.log("\n\nerr" + market, err);
+            }
+
+            this._onTrades({ symbol: market, trades: data })
+        });
     }
 
     handleTrades(trades) {
         // NORMALIZANDO MENSAGENS
+        trades.trades.reverse()
+
         for (let j = 0; j < trades.trades.length; j++) {
             const trade = trades.trades[j];
+            console.log(trade.trade_id, '<=', this.coins[trades.symbol].lastTrade, trade.trade_id <= this.coins[trades.symbol].lastTrade);
+
+            if (trade.trade_id <= this.coins[trades.symbol].lastTrade)
+                continue
+
             const normalized = {
                 order_id: trade.trade_id,
                 time_trade: trade.time,
                 amount: (trade.side == 'buy') ? trade.size : -trade.size,
                 price: trade.price,
             }
+
             this.coins[trades.symbol].trades.push(normalized)
             this.coins[trades.symbol].lastTrade = trade.trade_id
         }
+
+        this.saveTrade(trades.symbol)
     }
 
     saveAllTrade() {
         console.log("Salvando trades websocket", this.id, new Date());
         for (let i = 0; i < this.symbols.length; i++) {
-            this.saveTrade(this.symbols[i])
+            this.getProductTrades(this.symbols[i])
         }
     }
 

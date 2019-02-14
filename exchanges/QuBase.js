@@ -15,7 +15,7 @@ module.exports = class QuBase {
         this.symbols.forEach(function (symbol) {
             self.coins[symbol] = {}
             self.coins[symbol].trades = []
-            self.coins[symbol].lastTrade = null
+            self.coins[symbol].lastTrade = -1
             self.coins[symbol].book = {}
             self.coins[symbol].book.bids = []
             self.coins[symbol].book.asks = []
@@ -140,7 +140,7 @@ module.exports = class QuBase {
         self.sequelize.sync()
             .then(() => Marketdata.bulkCreate(trades))
             .then(result => {
-                console.log(symbol, "salvo com sucesso!!", result);
+                // console.log(symbol, "salvo com sucesso!!", result);
             });
     }
 
