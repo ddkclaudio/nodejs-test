@@ -16,10 +16,43 @@ module.exports = class QuCoinbase extends QuBase {
         this.publicClient = new Gdax.PublicClient();
         this.orderbookSync = new Gdax.OrderbookSync(markets);
 
+        for (let i = 0; i < markets.length; i++) {
+            const market = markets[i];
+            console.log(market, "=============================");
+
+            // GET 100 TRADES LAST_ID = 59064031
+            this.publicClient.getProductTrades(market, (err, resp, data) => {
+                if (err) {
+                    console.log("\n\nerr" + market, err);
+                }
+
+                this._onTrades({ symbol: market, trades: data })
+            });
+
+        }
+
     }
 
     handleTrades(trades) {
-        // this.coins[Symbol].trades.push(normalized)
+        // NORMALIZANDO MENSAGENS
+        for (let j = 0; j < trades.trades.length; j++) {
+            const trade = trades.trades[j];
+            const normalized = {
+                order_id: trade.trade_id,
+                time_trade: trade.time,
+                amount: (trade.side == 'buy') ? trade.size : -trade.size,
+                price: trade.price,
+            }
+            this.coins[trades.symbol].trades.push(normalized)
+            this.coins[trades.symbol].lastTrade = trade.trade_id
+        }
+    }
+
+    saveAllTrade() {
+        console.log("Salvando trades websocket", this.id, new Date());
+        for (let i = 0; i < this.symbols.length; i++) {
+            this.saveTrade(this.symbols[i])
+        }
     }
 
     updateBookToSave() {
@@ -35,7 +68,7 @@ module.exports = class QuCoinbase extends QuBase {
         this.coins[symbol].book.bids = []
         this.coins[symbol].book.asks = []
         var amount = 0
-        
+
         for (let i = 0; i < orderBook.bids.length; i++) {
             const element = orderBook.bids[i];
             amount = element.size.toNumber()
